@@ -13,9 +13,10 @@
       when: ansible_facts['os_family'] == "RedHat" 
     - role: apache-debian
       when: ansible_facts['os_family'] == "Debian"
+    - role: modulos-apache
 
   tasks:
-  - name: Create loadbalancer configuration
+  - name: Create loadbalancer configuration for RedHat
     template:
       src: templates/loadbalancer.j2
       dest: /etc/httpd/vhost.d/loadbalancer.conf
@@ -23,6 +24,16 @@
       mode: '0644'
     when: ansible_facts['os_family'] == "RedHat"
     notify: Restart httpd
+
+  - name: Create loadbalancer configuration for Debian
+    template:
+      src: templates/loadbalancer.j2
+      dest: /etc/apache2/sites-enabled/000-default.conf
+      owner: root
+      mode: '0644'
+    when: ansible_facts['os_family'] == "Debian"
+    notify: Restart apache
+
 
 
 

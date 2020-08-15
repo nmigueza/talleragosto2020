@@ -7,7 +7,7 @@
   apt:
     name: apache2
     state: latest
-    update_cache: yes
+    update_cache: yes 
 
 # Se inicia y habilita servicio apache2
 - name: Start and enable service
@@ -27,4 +27,7 @@
   loop:
     - '80'
     - '443'
+
+
+
 

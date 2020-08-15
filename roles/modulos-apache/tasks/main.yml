@@ -1,0 +1,13 @@
+---
+# tasks file for roles/modulos-apache
+# Habiliar modulos apache para proxy reverso y balanceo de carga
+
+- name: Enable apache modules
+  apache2_module:
+    state: present
+    name: "{{ item }}"
+  loop:
+    - proxy
+    - proxy_http
+    - proxy_balancer
+    - lbmethod_byrequests
