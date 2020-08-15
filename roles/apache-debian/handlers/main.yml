@@ -1,2 +1,9 @@
 ---
 # handlers file for roles/apache-debian
+
+- name: Restart apache
+  service:
+    name: apache2
+    state: restarted
+    enabled: yes
+

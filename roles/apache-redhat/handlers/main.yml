@@ -1,2 +1,9 @@
 ---
 # handlers file for roles/apache-redhat
+
+- name: Restart httpd
+  service:
+    name: httpd
+    state: restarted
+    enabled: yes
+
