@@ -1,0 +1,30 @@
+---
+# tasks file for roles/apache-debian
+# Aplica a distribuciones Debian
+
+# Instalacion de Apache Server
+- name: Install Apache Server
+  apt:
+    name: apache2
+    state: latest
+    update_cache: yes
+
+# Se inicia y habilita servicio apache2
+- name: Start and enable service
+  service:
+    name: apache2
+    state: started
+    enabled: yes
+
+# Se configura firewall para que0 acpete conexiones de apache en:
+# - puerto 80 correspondiente a hhtp
+# - puerto 443 correspondiente a https
+- name: Configure firewall http
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    state: enabled
+  loop:
+    - '80'
+    - '443'
+

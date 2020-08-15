@@ -1,0 +1,17 @@
+---
+- hosts: webserver
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  
+
+  roles: 
+    - role: apache-redhat
+      when: ansible_facts['os_family'] == "RedHat" 
+    - role: apache-debian
+      when: ansible_facts['os_family'] == "Debian"
+
+
+
+
+

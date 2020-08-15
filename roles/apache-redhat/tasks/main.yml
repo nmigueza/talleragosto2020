@@ -1,0 +1,42 @@
+---
+# tasks file for roles/apache-redhat
+# Aplica a distribuciones RedHat
+
+# Instalacion de Apache Server
+- name: Install Apache Server
+  yum:
+    name: httpd
+    state: latest
+
+# Creacion de VirtualHost
+- name: Create virtualhost config directory
+  file:
+    path: /etc/httpd/vhost.d
+    state: directory
+    mode: '0755'
+    owner: root
+
+# Se agrega VirtualHost creado a configuracion de apache
+- name: Add virtualhost config directory to httpd.conf
+  lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    line: IncludeOptional vhost.d/*.conf
+
+# Se iniocia y habilita servicio apache
+- name: Start and enable services
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+
+# se habilita firewall para conexiones http y https de apache
+- name: Configure firewall
+  firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: yes
+    immediate: yes
+  loop:
+    - http
+    - https
+
