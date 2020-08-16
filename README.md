@@ -1,24 +1,23 @@
-### Bold
-TALLER LINUX 2020
+### TALLER LINUX 2020
+
 ##
 El siguiente proyecto corresponde al trabajo obligatorio correspondiente al Taller Linux 2020 ORT.
-**bold text**
-Proyecto
 
-### Italic
+### Presentación del Proyecto
 
-*El proyecto consta de dos partes:
+##
+
+El proyecto consta de dos partes:
  - Instalación de Servidor Linux.
  - Implementación de Playbook de Ansible para realizar diferentes tareas.
 
 Además, es necesario contar con por lo menos dos servidores:
  - El servidor Linux que se debe implementar.
  - 	Equipo bastión con la herramienta Ansible instalada.
-*
-**bold text**
-Instalación servidor Lunux
-### Italic
-* - Disco de 12 GB.
+
+### Instalación servidor Lunux
+##
+  - Disco de 12 GB.
   - Partición física de 1G para /boot.
   - Volumen lógico de 5GB para /.
   - 	/var 3 GB para.
@@ -28,10 +27,9 @@ Instalación servidor Lunux
   - Debe existir un usuario ansible, con permisos de SUDO sin contraseña. 
   - Desde el equipo bastión, se debe copiar la clave pública hacia el servidor Linux implementado, para poder conectarse a él sin contraseña. 
 
-  **bold text**
-  Implementación Playbook Ansible
-  ## Italic
-  *1.	Instalar los paquetes correspondientes a un servidor web.
+### Implementación Playbook Ansible
+  ## 
+   1.	Instalar los paquetes correspondientes a un servidor web.
    2.	Generar un virtualhost a partir de un template que contenga la configuración para actuar como proxy reverso con balanceo de carga. 
    3.	Los valores para definir el clúster y los nodos que se van a balancear deben tomarse desde un archivo de variables. 
    4.	El servidor web debe reiniciarse si hay un cambio en la configuración del virtual host. 
