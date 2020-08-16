@@ -2,7 +2,7 @@
 # tasks file for roles/modulos-apache
 # Habiliar modulos apache para proxy reverso y balanceo de carga
 
-- name: Enable apache modules
+- name: Enable apache modules Redhat
   apache2_module:
     state: present
     name: "{{ item }}"
@@ -11,3 +11,19 @@
     - proxy_http
     - proxy_balancer
     - lbmethod_byrequests
+  notify: Restart httpd
+  when: ansible_facts['os_family'] == "RedHat"
+
+
+- name: Enable apache modules Debian
+  apache2_module:
+    state: present
+    name: "{{ item }}"
+  loop:
+    - proxy
+    - proxy_http
+    - proxy_balancer
+    - lbmethod_byrequests
+  notify: Restart apache
+  when: ansible_facts['os_family'] == "Debian"
+
