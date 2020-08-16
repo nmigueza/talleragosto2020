@@ -153,9 +153,9 @@ Estos módulos se definen en el archivo de variables ./taller_2020/roles/vars/ma
    `- lbmethod_byrequests`
 
 ### Archivo ./taller_2020/loadbalancer.j2
-Contiene la configuración de virtual Host para Proxy Reverso y Balanceador
+Contiene la configuración de Virtual Host para Proxy Reverso y Balanceador
 
-Toma las variables del un archivo de variables.
+Toma las variables de un archivo de variables.
 
 ### Archivo /taller_2020/vars/loadbalancer_vars.yml
 ##
