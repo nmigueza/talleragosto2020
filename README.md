@@ -186,6 +186,16 @@ Para chequear sintaxis de Playbook: `ansible-playbook playbook.yml --syntax.chec
 
 Para realizar un drive run: `ansible-playbook playbook.yml --check`
 
+### Resultados de la ejecución
+##
+Una vez ejecutado el Playbook, se cuenta con dos servidores web, uno de distribución Centos y otro de distribución Ubuntu.
+
+Ambos servidores contienen todas las configuraciones necesarias para que el servicio web funcione correctamte, esto es el servicio Apache levantado y dando servicio a través de un Proxy Reverso. 
+
+Como configuración adicional, el servicio web realiza Balanceo de Carga entre dos nodos.
+
+Esta implementación puede ser utilizada todas las veces que sea necesario levanatar servidores web con estas características. Es una implementación genérica que puede ser reutilizada para cualquier distribución de Linux de las familias RedHat y Debian.
+
 ### Referencias
 
 [Documentación de Ansible](https://docs.ansible.com/)
