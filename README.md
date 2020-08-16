@@ -109,29 +109,7 @@ Contiene las llamadas a los roles:
       when: ansible_facts['os_family'] == "Debian"
     - role: modulos-apache 
 
-Y también contiene las tareas de loadbalancer:
-
-Para familia RedHat:
-##
-   name: Create loadbalancer configuration for RedHat
-    template:
-      src: templates/loadbalancer.j2
-      dest: /etc/httpd/vhost.d/loadbalancer.conf
-      owner: root
-     mode: '0644'
-   when: ansible_facts['os_family'] == "RedHat"
-   notify: Restart httpd
-
-Para familia Debian:
-##
-  name: Create loadbalancer configuration for Debian
-    template:
-      src: templates/loadbalancer.j2
-      dest: /etc/apache2/sites-enabled/000-default.conf
-      owner: root
-      mode: '0644'
-   when: ansible_facts['os_family'] == "Debian"
-   notify: Restart apache
+Y también contiene las tareas de loadbalancer, tanto para la familia RedHat como para la familia Debian.
 
 ### ROLES DEFINIDOS
 ##
@@ -150,6 +128,8 @@ También contiene los Handlers correspondientes para reiniciar el servicio Apach
 
 ## Archivo ./taller_2020/roles/apache-redhat/tasks/mail.yml
 ##
+	```
+{
  name: Install Apache Server
  yum:
    name: httpd
@@ -182,7 +162,8 @@ También contiene los Handlers correspondientes para reiniciar el servicio Apach
  loop:
    - http
    - https
-
+}
+```
 ## Archivo  ./taller_2020/roles/apache-redhat/handlers/main.yml
 ##
  name: Restart httpd
