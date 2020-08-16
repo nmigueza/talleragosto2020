@@ -1,2 +1,9 @@
 ---
 # vars file for roles/modulos-apache
+# Variables módulos de Apache
+#
+modulos:
+  - proxy
+  - proxy_http
+  - proxy_balancer
+  - lbmethod_byrequests

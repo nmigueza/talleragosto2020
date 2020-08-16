@@ -6,11 +6,8 @@
   apache2_module:
     state: present
     name: "{{ item }}"
-  loop:
-    - proxy
-    - proxy_http
-    - proxy_balancer
-    - lbmethod_byrequests
+  loop: "{{ modulos }}"
+
   notify: Restart httpd
   when: ansible_facts['os_family'] == "RedHat"
 
@@ -19,11 +16,7 @@
   apache2_module:
     state: present
     name: "{{ item }}"
-  loop:
-    - proxy
-    - proxy_http
-    - proxy_balancer
-    - lbmethod_byrequests
+  loop: "{{ modulos }}"
   notify: Restart apache
   when: ansible_facts['os_family'] == "Debian"
 

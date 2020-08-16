@@ -8,7 +8,7 @@
     name: httpd
     state: latest
 
-# Creacion de VirtualHost
+# Creacion de directorio de VirtualHost
 - name: Create virtualhost config directory
   file:
     path: /etc/httpd/vhost.d
@@ -22,7 +22,7 @@
     path: /etc/httpd/conf/httpd.conf
     line: IncludeOptional vhost.d/*.conf
 
-# Se iniocia y habilita servicio apache
+# Se inicia y habilita servicio apache
 - name: Start and enable services
   service:
     name: httpd

@@ -85,6 +85,7 @@ El playbook de Ansible creado cuenta con los siguientes componentes:
 ### Archivo ./taller_2020/ansible.cfg
 ##
 Se configuran los siguientes parámetros:
+##
 `inventory       = ./inventario`
 
 `sudo_user      = ansible`
@@ -102,41 +103,41 @@ Se configuran los siguientes parámetros:
 ### Archivo ./taller_2020/playbook.yml
 Contiene las llamadas a los roles:
 ##
-    `- role: apache-redhat`
-     ` when: ansible_facts['os_family'] == "RedHat"`
-    `- role: apache-debian`
-     ` when: ansible_facts['os_family'] == "Debian"`
-    `- role: modulos-apache`
+    - role: apache-redhat
+      when: ansible_facts['os_family'] == "RedHat"
+    - role: apache-debian`
+      when: ansible_facts['os_family'] == "Debian"
+    - role: modulos-apache 
 
 Y también contiene las tareas de loadbalancer:
 
 Para familia RedHat:
 ##
-  `- name: Create loadbalancer configuration for RedHat`
-   ` template:`
-`      src: templates/loadbalancer.j2`
- `     dest: /etc/httpd/vhost.d/loadbalancer.conf`
-  `    owner: root`
-   `   mode: '0644'`
-    `when: ansible_facts['os_family'] == "RedHat"`
-    `notify: Restart httpd`
+  - name: Create loadbalancer configuration for RedHat
+    template:
+      src: templates/loadbalancer.j2
+      dest: /etc/httpd/vhost.d/loadbalancer.conf
+      owner: root
+     mode: '0644'
+   when: ansible_facts['os_family'] == "RedHat"
+   notify: Restart httpd
 
 Para familia Debian:
 ##
- ` - name: Create loadbalancer configuration for Debian`
-  `  template:`
-   `   src: templates/loadbalancer.j2`
-    `  dest: /etc/apache2/sites-enabled/000-default.conf`
-     ` owner: root`
-      `mode: '0644'`
-    `when: ansible_facts['os_family'] == "Debian"`
-    `notify: Restart apache`
+ - name: Create loadbalancer configuration for Debian
+    template:
+      src: templates/loadbalancer.j2
+      dest: /etc/apache2/sites-enabled/000-default.conf
+      owner: root
+      mode: '0644'
+   when: ansible_facts['os_family'] == "Debian"
+   notify: Restart apache
 
-### Roles definidos
+### ROLES DEFINIDOS
 ##
 Se definen los siguientes roles:
 
-### apache-redhat
+### ROL apache-redhat
 ##
 Aplica a servidores de la familia Redhat y contiene las tareas correspondientes a:
    - Instalación de Apache Server.
@@ -145,63 +146,175 @@ Aplica a servidores de la familia Redhat y contiene las tareas correspondientes 
    - Se inicia y habilita el servicio hhtpd.
    - Se configura el firewall para que acepte conexxiones http y https.
 
-### apache-debian
+También contiene los Handlers correspondientes para reiniciar el servicio Apache en caso de modificaciones.
+
+## Archivo ./taller_2020/roles/apache-redhat/tasks/mail.yml
+##
+---
+# tasks file for roles/apache-redhat
+# Aplica a distribuciones RedHat
+
+# Instalacion de Apache Server
+- name: Install Apache Server
+  yum:
+    name: httpd
+    state: latest
+
+# Creacion de directorio de VirtualHost
+- name: Create virtualhost config directory
+  file:
+    path: /etc/httpd/vhost.d
+    state: directory
+    mode: '0755'
+    owner: root
+
+# Se agrega VirtualHost creado a configuracion de apache
+- name: Add virtualhost config directory to httpd.conf
+  lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    line: IncludeOptional vhost.d/*.conf
+
+# Se inicia y habilita servicio apache
+- name: Start and enable services
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+
+# se habilita firewall para conexiones http y https de apache
+- name: Configure firewall
+  firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: yes
+    immediate: yes
+  loop:
+    - http
+    - https
+
+## Archivo  ./taller_2020/roles/apache-redhat/handlers/main.yml
+---
+# handlers file for roles/apache-redhat
+- name: Restart httpd
+  service:
+    name: httpd
+    state: restarted
+    enabled: yes
+
+### ROL apache-debian
 ##
 Aplica a servidores de la familia Debian y contiene las tareas correspondientes a:
    - Instalación de Apache Server.
    - Se inicia y habilita el servicio hhtpd.
    - Se configura el firewall para que acepte conexxiones http y https.
 
-### modulos-apache
+También contiene los Handlers correspondientes para reiniciar el servicio Apache en caso de modificaciones.
+
+## Archivo ./taller_2020/roles/apache-debian/tasks/main.yml
+##
+---
+# tasks file for roles/apache-debian
+# Aplica a distribuciones Debian
+
+# Instalacion de Apache Server
+- name: Install Apache Server
+  apt:
+    name: apache2
+    state: latest
+    update_cache: yes
+
+# Se inicia y habilita servicio apache2
+- name: Start and enable service
+  service:
+    name: apache2
+    state: started
+    enabled: yes
+
+# Se configura firewall para que0 acpete conexiones de apache en:
+# - puerto 80 correspondiente a hhtp
+# - puerto 443 correspondiente a https
+- name: Configure firewall http
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    state: enabled
+  loop:
+    - '80'
+    - '443'
+
+## Archivo ./taller_2020/roles/apache-debian/handlers/main.yml
+---
+# handlers file for roles/apache-debian
+- name: Restart apache
+  service:
+    name: apache2
+    state: restarted
+    enabled: yes
+
+### ROL modulos-apache
 Aplica a servidores de ambas familias y contiene la habilitación de los módulos de Apache que son necesarios para configurar Proxy Reverso y Balanceo de Carga.
-Estos módulos son:
-    - proxy
-    - proxy_http
-    - proxy_balancer
-    - lbmethod_byrequests
+
+Estos módulos se definen en el archivo ./taller_2020/roles/vars/main.yml:
+##
+ `modulo:`
+
+   `- proxy`
+
+   `- proxy_http`
+
+  `- proxy_balancer`
+
+   `- lbmethod_byrequests`
 
 ### Archivo de Variables
 ##
 Archivo ./taller_2020/loadbalancer_vars.yml
 ##
 `nombre_cluster: balanceador`
+
 `nodo1: nodo1.lab.ort`
+
 `nodo2: nodo2.lab.ort`
+
 `puerto1: 8080`
+
 `puerto2: 8080`
+
 `red_autorizada: 192.168.227.0/24`
 
 ### Archivo ./taller_2020/loadbalancer.j2
 Contiene la configuración de virtual Host para Proxy Reverso y Balanceador
 ##
-`<VirtualHost *:80>`
- ` <Proxy balancer://{{ nombre_cluster }}>`
-     ` BalancerMember http://{{ nodo1 }}:{{ puerto1 }}`
-    `  BalancerMember http://{{ nodo2 }}:{{ puerto2 }}`
-  `    Require all granted`
- ` </Proxy>`
+<VirtualHost *:80>
+  <Proxy balancer://{{ nombre_cluster }}>
+      BalancerMember http://{{ nodo1 }}:{{ puerto1 }}
+      BalancerMember http://{{ nodo2 }}:{{ puerto2 }}
 
- `ProxyPreserveHost On`
- `ProxyPass /balancer-manager !`
- `ProxyPass / balancer://{{ nombre_cluster }}/`
- `ProxyPassReverse / balancer://{{ nombre_cluster }}/`
- 
-  `<Location "/balancer-manager">`
-   `  SetHandler balancer-manager`
-     `Require ip {{ red_autorizada }}`
-  `</Location>`
-`</VirtualHost>`
+      Require all granted
+  </Proxy>
+
+  ProxyPreserveHost On
+  ProxyPass /balancer-manager !
+  ProxyPass / balancer://{{ nombre_cluster }}/
+  ProxyPassReverse / balancer://{{ nombre_cluster }}/
+
+  <Location "/balancer-manager">
+     SetHandler balancer-manager
+     Require ip {{ red_autorizada }}
+  </Location>
+
+</VirtualHost>
 
 ### Ejecución de Playbook
 Para la ejecución del Playbook es necesario correr el sifguiente comando en el servidos bastión de Ansible:
 Directorio: ./taller_2020
-Comando: `ansible-playbook playbook.yml --ask-become-pass`
+Comando: `ansible-playbook playbook.yml`
 
 ### Otros comandos útiles:
 ##
-Para chequear sintaxis de Playbook: `ansible-playbook playbook.yml --syntax.check --ask-become-pass`
+Para chequear sintaxis de Playbook: `ansible-playbook playbook.yml --syntax.check`
 
-Para realiizar un drive run: `ansible-playbook playbook.yml --check --ask-become-pass`
+Para realiizar un drive run: `ansible-playbook playbook.yml --check`
 
 ### Referencias
 
@@ -210,6 +323,8 @@ Para realiizar un drive run: `ansible-playbook playbook.yml --check --ask-become
 [Ansible Essentials](https://www.ansible.com/resources/webinars-training/introduction-to-ansible)
 ##
 [GitHub](https://github.com/)
+##
+[Apache Proxy Reverso y Balancep](https://www.digitalocean.com/community/tutorials/how-to-use-apache-as-a-reverse-proxy-with-mod_proxy-on-ubuntu-16-04)
 
 ### Autor
 ##
