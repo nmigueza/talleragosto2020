@@ -35,6 +35,7 @@ Ambos incluyen los siguientes requerimientos:
    7.	El playbook debe ser válido tanto para distribuciones CentOS como para distribuciones Ubuntu. 
 
 ### Repositorio GIT
+##
 El Playbook de Ansible y y todos los archivos necesarios se encuentran alojados en un repositorio de GitHub llamado “talleragosto2020”. 
 
 ### Link a repositorio GitHub
@@ -42,17 +43,154 @@ El Playbook de Ansible y y todos los archivos necesarios se encuentran alojados 
 [talleragosto2020](https://github.com/nmigueza/talleragosto2020)
 
 ### Guía de instalación de Centos8
+##
+   - Iniciar la instalación.
+   - Seleccionar el idioma.
+   - Configurar destino de la instalación.
+   - Seleccionar disco físico y modo de configuración.
+   - Configurar particiones.
+   - Establecer contraseña de root.
+   - Crear usuario ansible.
+   - Reiniciar para finalizar la instalación.
 
-![Inicio de instalación](C:\Users\nmigu\Desktop\ORT\Obligatorio\imagenes\1.jpg)
-![Selección del Idioma](C:\Users\nmigu\Desktop\ORT\Obligatorio\imagenes\2.png)
-![Destino de la instalación](C:\Users\nmigu\Desktop\ORT\Obligatorio\imagenes\3.png)
-![Seleccionar disco físico](C:\Users\nmigu\Desktop\ORT\Obligatorio\imagenes\4.png)
-![Configuración de particiones](C:\Users\nmigu\Desktop\ORT\Obligatorio\imagenes\5.png)
-![usuarios](C:\Users\nmigu\Desktop\ORT\Obligatorio\imagenes\6.png)
-![Establecer contraseña de root](C:\Users\nmigu\Desktop\ORT\Obligatorio\imagenes\7.png)
-![Creación de usuario ansible](C:\Users\nmigu\Desktop\ORT\Obligatorio\imagenes\8.png)
-![fin de instalación](C:\Users\nmigu\Desktop\ORT\Obligatorio\imagenes\9.png)
+### Guía de instalación de Ubuntu20.04
+##
+   - Iniciar la instalación.
+   - Seleccionar el idioma.
+   - Seleccionar idioma del teclado.
+   - Seleccionar disco físico y la opción de configurarlo como un grupo LVM.
+   - Configurar particiones.
+   - Establecer nombre de equipo y crear usuario ansible.
+   - Reiniciar para finalizar la instalación.
 
+[^1] Las guías de instalación descriptas anteriormente corresponden a los pasos principales en la instalación de los sistemas operativos. Existen también otros pasos intermedios que deben dejarse con las configuraciones por defecto.
+
+### Creación de Playbook Ansible
+##
+Todas las configuraciones descriptas anteriormente aplican para familias de servidores RedHat y Debian. RedHat incluye la distribución Centos y Debian incluye la distribución Ubuntu utilizadas en este proyecto.
+
+De esta forma, esta implementación es más genérica y aplica también a otras distribuciones diferentes de Centos y Ubuntu, siempre que sean de las familias definidas.
+
+### Estructura del playbook
+##
+El playbook de Ansible creado cuenta con los siguientes componentes:
+   - Archivo de configuración local ansible.cfg.
+   - Archivo inventario, que contiene la lista de equipos a los que se le aplica el playbook.
+   - Archivo playbook.yml con las configuraciones correspondientes para la ejecución. Contiene la llamada a los diferentes roles creados y también la configuración para la implementación de Virtual Host con proxy Reverso y Balanceo de Carga.
+   - Directorio roles que contiene las configuraciones de los diferentes roles definidos.
+   - Directorios vars donde se aloja el archivo de variables, loadbalancer_vars.yml, para configuración de Virtual Host para Proxy Reverso y Balanceo de Carga.
+   - Directorio templates que contiene el archivo loadbalancer.j2 que contiene la estructura del archivo de Virtual Host generado a partir del playbook.yml.
+   - Archivo README.md.
+
+### Archivo ./taller_2020/ansible.cfg
+##
+Se configuran los siguientes parámetros:
+`inventory       = ./inventario`
+`sudo_user      = ansible`
+`roles_path    = ./roles:/etc/ansible/roles`
+
+### Archivo ./taller_2020/inventario
+##
+`[webserver]`
+`centos1 ansible_host=192.168.227.7`
+`ubuntu1 ansible_host=192.168.227.9`
+
+### Archivo ./taller_2020/playbook.yml
+Contiene las llamadas a los roles:
+    `- role: apache-redhat`
+     ` when: ansible_facts['os_family'] == "RedHat"`
+    `- role: apache-debian`
+     ` when: ansible_facts['os_family'] == "Debian"`
+    `- role: modulos-apache`
+
+Y también contiene las tareas de loadbalancer:
+
+Para familia RedHat:
+  `- name: Create loadbalancer configuration for RedHat`
+   ` template:`
+`      src: templates/loadbalancer.j2`
+ `     dest: /etc/httpd/vhost.d/loadbalancer.conf`
+  `    owner: root`
+   `   mode: '0644'`
+    `when: ansible_facts['os_family'] == "RedHat"`
+    `notify: Restart httpd`
+
+Para familia Debian:
+ ` - name: Create loadbalancer configuration for Debian`
+  `  template:`
+   `   src: templates/loadbalancer.j2`
+    `  dest: /etc/apache2/sites-enabled/000-default.conf`
+     ` owner: root`
+      `mode: '0644'`
+    `when: ansible_facts['os_family'] == "Debian"`
+    `notify: Restart apache`
+
+### Roles definidos
+##
+Se definen los siguientes roles:
+
+### apache-redhat
+##
+Aplica a servidores de la familia Redhat y contiene las tareas correspondientes a:
+   - Instalación de Apache Server.
+   - Creación del directorio para virtual Host.
+   - Se agrega dicho directorio a la configuración de Apache, archivo /etc/httpd/conf/httpd.conf.
+   - Se inicia y habilita el servicio hhtpd.
+   - Se configura el firewall para que acepte conexxiones http y https.
+
+### apache-debian
+##
+Aplica a servidores de la familia Debian y contiene las tareas correspondientes a:
+   - Instalación de Apache Server.
+   - Se inicia y habilita el servicio hhtpd.
+   - Se configura el firewall para que acepte conexxiones http y https.
+
+### modulos-apache
+Aplica a servidores de ambas familias y contiene la habilitación de los módulos de Apache que son necesarios para configurar Proxy Reverso y Balanceo de Carga.
+Estos módulos son:
+    - proxy
+    - proxy_http
+    - proxy_balancer
+    - lbmethod_byrequests
+
+### Archivo de Variables
+##
+Archivo ./taller_2020/loadbalancer_vars.yml
+`nombre_cluster: balanceador`
+`nodo1: nodo1.lab.ort`
+`nodo2: nodo2.lab.ort`
+`puerto1: 8080`
+`puerto2: 8080`
+`red_autorizada: 192.168.227.0/24`
+
+### Archivo ./taller_2020/loadbalancer.j2
+Contiene la configuración de virtual Host para Proxy Reverso y Balanceador
+`<VirtualHost *:80>`
+ ` <Proxy balancer://{{ nombre_cluster }}>`
+     ` BalancerMember http://{{ nodo1 }}:{{ puerto1 }}`
+    `  BalancerMember http://{{ nodo2 }}:{{ puerto2 }}`
+  `    Require all granted`
+ ` </Proxy>`
+ `ProxyPreserveHost On`
+ `ProxyPass /balancer-manager !`
+ `ProxyPass / balancer://{{ nombre_cluster }}/`
+ `ProxyPassReverse / balancer://{{ nombre_cluster }}/`
+  `<Location "/balancer-manager">`
+   `  SetHandler balancer-manager`
+     `Require ip {{ red_autorizada }}`
+  `</Location>`
+`</VirtualHost>`
+
+### Ejecución de Playbook
+Para la ejecución del Playbook es necesario correr el sifguiente comando en el servidos bastión de Ansible:
+Directorio: ./taller_2020
+Comando: `ansible-playbook playbook.yml --ask-become-pass`
+
+### Otros comandos útiles:
+##
+Para chequear sintaxis de Playbook: `ansible-playbook playbook.yml --syntax.check --ask-become-pass`
+
+Para realiizar un drive run: `ansible-playbook playbook.yml --check --ask-become-pass`
 
 ### Referencias
 
@@ -62,71 +200,14 @@ El Playbook de Ansible y y todos los archivos necesarios se encuentran alojados 
 ##
 [GitHub](https://github.com/)
 
-
-
-### Code
-
-`code`
-
-### Horizontal Rule
-
----
+### Autor
+##
+Lic. Nancy Miguez
 
 
 
-### Image
 
 
 
-## Extended Syntax
 
-These elements extend the basic syntax by adding additional features. Not all Markdown applications support these elements.
 
-### Table
-
-| Syntax | Description |
-| ----------- | ----------- |
-| Header | Title |
-| Paragraph | Text |
-
-### Fenced Code Block
-
-```
-{
-  "firstName": "John",
-  "lastName": "Smith",
-  "age": 25
-}
-```
-
-### Footnote
-
-Here's a sentence with a footnote. [^1]
-
-[^1]: This is the footnote.
-
-### Heading ID
-
-### My Great Heading {#custom-id}
-
-### Definition List
-
-term
-: definition
-
-### Strikethrough
-
-~~The world is flat.~~
-
-### Task List
-
-- [x] Write the press release
-- [ ] Update the website
-- [ ] Contact the media
-
-Agrega un link a un demo con el proyecto desplegado.
-Si es requerido, agrega una lista con los pasos mínimos que se necesitan para clonar exitosamente el proyecto y echarlo a andar en local.
-Explica qué debe ejecutarse para que sea posible instalarlo o instalar dependencias necesarias.
-Se amable y agrega una imagen que indique cómo debe verse el proyecto luego de instalarse o un una vista previa de lo que estás presentando en código. Esta imagen puede estar dentro del mismo proyecto y de preferencia debería estar allí.
-Finaliza con notas o apuntes que quisieras agregar, citando fuentes o dando agradecimientos a las personas que aportaron al proyecto que muestras.
-Por favor muéstrame tus grandes readme's! Dedícales tiempo y diviértete haciéndolos, es como el landing de tu proyecto. Dale amorcito desde el corazón.
