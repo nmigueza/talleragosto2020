@@ -63,7 +63,7 @@ El Playbook de Ansible y y todos los archivos necesarios se encuentran alojados 
    - Establecer nombre de equipo y crear usuario ansible.
    - Reiniciar para finalizar la instalación.
 
-[^1] Las guías de instalación descriptas anteriormente corresponden a los pasos principales en la instalación de los sistemas operativos. Existen también otros pasos intermedios que deben dejarse con las configuraciones por defecto.
+Las guías de instalación descriptas anteriormente corresponden a los pasos principales en la instalación de los sistemas operativos. Existen también otros pasos intermedios que deben dejarse con las configuraciones por defecto.
 
 ### Creación de Playbook Ansible
 ##
@@ -95,7 +95,7 @@ Se configuran los siguientes parámetros:
 ### Archivo ./taller_2020/inventario
 ##
 `[webserver]`
-
+ 
 `centos1 ansible_host=192.168.227.7`
 
 `ubuntu1 ansible_host=192.168.227.9`
@@ -113,7 +113,7 @@ Y también contiene las tareas de loadbalancer:
 
 Para familia RedHat:
 ##
-  - name: Create loadbalancer configuration for RedHat
+   name: Create loadbalancer configuration for RedHat
     template:
       src: templates/loadbalancer.j2
       dest: /etc/httpd/vhost.d/loadbalancer.conf
@@ -124,7 +124,7 @@ Para familia RedHat:
 
 Para familia Debian:
 ##
- - name: Create loadbalancer configuration for Debian
+  name: Create loadbalancer configuration for Debian
     template:
       src: templates/loadbalancer.j2
       dest: /etc/apache2/sites-enabled/000-default.conf
@@ -150,56 +150,46 @@ También contiene los Handlers correspondientes para reiniciar el servicio Apach
 
 ## Archivo ./taller_2020/roles/apache-redhat/tasks/mail.yml
 ##
----
-# tasks file for roles/apache-redhat
-# Aplica a distribuciones RedHat
+ name: Install Apache Server
+ yum:
+   name: httpd
+   state: latest
 
-# Instalacion de Apache Server
-- name: Install Apache Server
-  yum:
-    name: httpd
-    state: latest
+ name: Create virtualhost config directory
+ file:
+   path: /etc/httpd/vhost.d
+   state: directory
+   mode: '0755'
+   owner: root
 
-# Creacion de directorio de VirtualHost
-- name: Create virtualhost config directory
-  file:
-    path: /etc/httpd/vhost.d
-    state: directory
-    mode: '0755'
-    owner: root
+ name: Add virtualhost config directory to httpd.conf
+ lineinfile:
+   path: /etc/httpd/conf/httpd.conf
+   line: IncludeOptional vhost.d/*.conf
 
-# Se agrega VirtualHost creado a configuracion de apache
-- name: Add virtualhost config directory to httpd.conf
-  lineinfile:
-    path: /etc/httpd/conf/httpd.conf
-    line: IncludeOptional vhost.d/*.conf
+ name: Start and enable services
+ service:
+   name: httpd
+   state: started
+   enabled: yes
 
-# Se inicia y habilita servicio apache
-- name: Start and enable services
-  service:
-    name: httpd
-    state: started
-    enabled: yes
-
-# se habilita firewall para conexiones http y https de apache
-- name: Configure firewall
-  firewalld:
-    service: "{{ item }}"
-    state: enabled
-    permanent: yes
-    immediate: yes
-  loop:
-    - http
-    - https
+ name: Configure firewall
+ firewalld:
+   service: "{{ item }}"
+   state: enabled
+   permanent: yes
+   immediate: yes
+ loop:
+   - http
+   - https
 
 ## Archivo  ./taller_2020/roles/apache-redhat/handlers/main.yml
----
-# handlers file for roles/apache-redhat
-- name: Restart httpd
-  service:
-    name: httpd
-    state: restarted
-    enabled: yes
+##
+ name: Restart httpd
+ service:
+   name: httpd
+   state: restarted
+   enabled: yes
 
 ### ROL apache-debian
 ##
@@ -212,46 +202,37 @@ También contiene los Handlers correspondientes para reiniciar el servicio Apach
 
 ## Archivo ./taller_2020/roles/apache-debian/tasks/main.yml
 ##
----
-# tasks file for roles/apache-debian
-# Aplica a distribuciones Debian
+ name: Install Apache Server
+ apt:
+   name: apache2
+   state: latest
+   update_cache: yes
 
-# Instalacion de Apache Server
-- name: Install Apache Server
-  apt:
-    name: apache2
-    state: latest
-    update_cache: yes
+ name: Start and enable service
+ service:
+   name: apache2
+   state: started
+   enabled: yes
 
-# Se inicia y habilita servicio apache2
-- name: Start and enable service
-  service:
-    name: apache2
-    state: started
-    enabled: yes
-
-# Se configura firewall para que0 acpete conexiones de apache en:
-# - puerto 80 correspondiente a hhtp
-# - puerto 443 correspondiente a https
-- name: Configure firewall http
-  ufw:
-    rule: allow
-    port: "{{ item }}"
-    state: enabled
-  loop:
-    - '80'
-    - '443'
+ name: Configure firewall http
+ ufw:
+   rule: allow
+   port: "{{ item }}"
+   state: enabled
+ loop:
+   - '80'
+   - '443'
 
 ## Archivo ./taller_2020/roles/apache-debian/handlers/main.yml
----
-# handlers file for roles/apache-debian
-- name: Restart apache
-  service:
-    name: apache2
-    state: restarted
-    enabled: yes
+##
+ name: Restart apache
+ service:
+   name: apache2
+   state: restarted
+   enabled: yes
 
 ### ROL modulos-apache
+##
 Aplica a servidores de ambas familias y contiene la habilitación de los módulos de Apache que son necesarios para configurar Proxy Reverso y Balanceo de Carga.
 
 Estos módulos se definen en el archivo ./taller_2020/roles/vars/main.yml:
@@ -326,7 +307,7 @@ Para realiizar un drive run: `ansible-playbook playbook.yml --check`
 ##
 [Apache Proxy Reverso y Balancep](https://www.digitalocean.com/community/tutorials/how-to-use-apache-as-a-reverse-proxy-with-mod_proxy-on-ubuntu-16-04)
 
-### Autor
+### AUTOR
 ##
 Lic. Nancy Miguez
 
