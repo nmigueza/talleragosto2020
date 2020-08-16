@@ -43,21 +43,23 @@ El Playbook de Ansible y y todos los archivos necesarios se encuentran alojados 
 
 ### Guía de instalación de Centos8
 
-![Inicio de instalación](1.jpg)
-![Selección del Idioma](2.png)
-![Destino de la instalación](3.png)
-![Seleccionar disco físico](4.png)
-![Configuración de particiones](5.png)
-![usuarios](6.png)
-![Establecer contraseña de root](7.png)
-![Creación de usuario ansible](8.png)
-![fin de instalación](9.png)
+![Inicio de instalación](C:\Users\nmigu\Desktop\ORT\Obligatorio\imagenes\es1.jpg)
+![Selección del Idioma](C:\Users\nmigu\Desktop\ORT\Obligatorio\imagenes\2.png)
+![Destino de la instalación](C:\Users\nmigu\Desktop\ORT\Obligatorio\imagenes\3.png)
+![Seleccionar disco físico](C:\Users\nmigu\Desktop\ORT\Obligatorio\imagenes\4.png)
+![Configuración de particiones](C:\Users\nmigu\Desktop\ORT\Obligatorio\imagenes\5.png)
+![usuarios](C:\Users\nmigu\Desktop\ORT\Obligatorio\imagenes\6.png)
+![Establecer contraseña de root](C:\Users\nmigu\Desktop\ORT\Obligatorio\imagenes\7.png)
+![Creación de usuario ansible](C:\Users\nmigu\Desktop\ORT\Obligatorio\imagenes\8.png)
+![fin de instalación](C:\Users\nmigu\Desktop\ORT\Obligatorio\imagenes\9.png)
 
 
 ### Referencias
 
 [Documentación de Ansible](https://docs.ansible.com/)
+##
 [Ansible Essentials](https://www.ansible.com/resources/webinars-training/introduction-to-ansible)
+##
 [GitHub](https://github.com/)
 
 
