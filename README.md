@@ -43,7 +43,7 @@ El Playbook de Ansible y y todos los archivos necesarios se encuentran alojados 
 
 ### Guía de instalación de Centos8
 
-![Inicio de instalación](1.png)
+![Inicio de instalación](1.jpg)
 ![Selección del Idioma](2.png)
 ![Destino de la instalación](3.png)
 ![Seleccionar disco físico](4.png)
