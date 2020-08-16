@@ -1,26 +1,21 @@
 ### TALLER LINUX 2020
-
 ##
 El siguiente proyecto corresponde al trabajo obligatorio correspondiente al Taller Linux 2020 ORT.
 
 ### Presentación del Proyecto
-
 ##
-
 El proyecto consta de dos partes:
- - Instalación de Servidor Linux.
+ - Instalación de dos Servidores Linux.
  - Implementación de Playbook de Ansible para realizar diferentes tareas.
 
-Además, es necesario contar con por lo menos dos servidores:
- - El servidor Linux que se debe implementar.
- - 	Equipo bastión con la herramienta Ansible instalada.
-
-### Instalación servidor Lunux
+### Instalación servidores Lunux
 ##
+Se crean dos servidores Linux, unos con distribución Centos8 y otro con distribución Ubuntu20.04.
+Ambos incluyen los siguientes requerimientos:
   - Disco de 12 GB.
   - Partición física de 1G para /boot.
   - Volumen lógico de 5GB para /.
-  - 	/var 3 GB para.
+  - /var 3 GB para.
   - 2 GB para swap.
   - El resto de espacio libre para /home. 
   - Debe tener 2 interfaces de red definidas, una de ellas conectada a NAT y la otra a una red Interna que le permita conectarse al equipo bastión con Ansible. 
@@ -28,7 +23,9 @@ Además, es necesario contar con por lo menos dos servidores:
   - Desde el equipo bastión, se debe copiar la clave pública hacia el servidor Linux implementado, para poder conectarse a él sin contraseña. 
 
 ### Implementación Playbook Ansible
-  ## 
+## 
+ Para la implementación de Playbook de Ansible, se cuenta con un equipo bastión con la herramienta Ansible instalada. Dicho equipo es un servidor Ubuntu20.04.
+ Se implementan las siguientes configuraciones:
    1.	Instalar los paquetes correspondientes a un servidor web.
    2.	Generar un virtualhost a partir de un template que contenga la configuración para actuar como proxy reverso con balanceo de carga. 
    3.	Los valores para definir el clúster y los nodos que se van a balancear deben tomarse desde un archivo de variables. 
@@ -36,25 +33,34 @@ Además, es necesario contar con por lo menos dos servidores:
    5.	El firewall debe estar activo y con los puertos correspondientes a los servicios http y https permitidos.
    6.	El estado de los servicios necesarios debe ser iniciados y habilitados. 
    7.	El playbook debe ser válido tanto para distribuciones CentOS como para distribuciones Ubuntu. 
-   8.	El playbook y todos los archivos necesarios deben ser subidos a un repositorio GIT llamado “talleragosto2020”. 
-   9.	El repositorio, además de los archivos de Ansible solicitados, debe contar con un archivo README.md que describa el funcionamiento del Playbook y como debe ser utilizado.
+
+### Repositorio GIT
+El Playbook de Ansible y y todos los archivos necesarios se encuentran alojados en un repositorio de GitHub llamado “talleragosto2020”. 
+
+### Link a repositorio GitHub
+
+[talleragosto2020](https://github.com/nmigueza/talleragosto2020)
+
+### Guía de instalación de Centos8
+
+![Inicio de instalación](1.png)
+![Selección del Idioma](2.png)
+![Destino de la instalación](3.png)
+![Seleccionar disco físico](4.png)
+![Configuración de particiones](5.png)
+![usuarios](6.png)
+![Establecer contraseña de root](7.png)
+![Creación de usuario ansible](8.png)
+![fin de instalación](9.png)
 
 
-### Blockquote
+### Referencias
 
-> blockquote
+[Documentación de Ansible](https://docs.ansible.com/)
+[Ansible Essentials](https://www.ansible.com/resources/webinars-training/introduction-to-ansible)
+[GitHub](https://github.com/)
 
-### Ordered List
 
-1. First item
-2. Second item
-3. Third item
-
-### Unordered List
-
-- First item
-- Second item
-- Third item
 
 ### Code
 
@@ -64,13 +70,11 @@ Además, es necesario contar con por lo menos dos servidores:
 
 ---
 
-### Link
 
-[title](https://www.example.com)
 
 ### Image
 
-![alt text](image.jpg)
+
 
 ## Extended Syntax
 
@@ -117,8 +121,7 @@ term
 - [x] Write the press release
 - [ ] Update the website
 - [ ] Contact the media
-El primer título es el nombre de tu proyecto.
-El texto siguiente es una descripción simple y corta del contexto de tu proyecto.
+
 Agrega un link a un demo con el proyecto desplegado.
 Si es requerido, agrega una lista con los pasos mínimos que se necesitan para clonar exitosamente el proyecto y echarlo a andar en local.
 Explica qué debe ejecutarse para que sea posible instalarlo o instalar dependencias necesarias.
