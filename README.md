@@ -23,7 +23,7 @@ Ambos incluyen los siguientes requerimientos:
   - Desde el equipo bastión, se debe copiar la clave pública hacia el servidor Linux implementado, para poder conectarse a él sin contraseña. 
 
 ### Implementación Playbook Ansible
-## 
+##
  Para la implementación de Playbook de Ansible, se cuenta con un equipo bastión con la herramienta Ansible instalada. Dicho equipo es un servidor Ubuntu20.04.
  Se implementan las siguientes configuraciones:
    1.	Instalar los paquetes correspondientes a un servidor web.
@@ -126,10 +126,8 @@ Aplica a servidores de la familia Redhat y contiene las tareas correspondientes 
 
 También contiene los Handlers correspondientes para reiniciar el servicio Apache en caso de modificaciones.
 
-## Archivo ./taller_2020/roles/apache-redhat/tasks/mail.yml
+### Archivo ./taller_2020/roles/apache-redhat/tasks/mail.yml
 ##
-	```
-{
  name: Install Apache Server
  yum:
    name: httpd
@@ -162,9 +160,8 @@ También contiene los Handlers correspondientes para reiniciar el servicio Apach
  loop:
    - http
    - https
-}
-```
-## Archivo  ./taller_2020/roles/apache-redhat/handlers/main.yml
+
+### Archivo  ./taller_2020/roles/apache-redhat/handlers/main.yml
 ##
  name: Restart httpd
  service:
@@ -181,7 +178,7 @@ Aplica a servidores de la familia Debian y contiene las tareas correspondientes 
 
 También contiene los Handlers correspondientes para reiniciar el servicio Apache en caso de modificaciones.
 
-## Archivo ./taller_2020/roles/apache-debian/tasks/main.yml
+### Archivo ./taller_2020/roles/apache-debian/tasks/main.yml
 ##
  name: Install Apache Server
  apt:
@@ -204,7 +201,7 @@ También contiene los Handlers correspondientes para reiniciar el servicio Apach
    - '80'
    - '443'
 
-## Archivo ./taller_2020/roles/apache-debian/handlers/main.yml
+### Archivo ./taller_2020/roles/apache-debian/handlers/main.yml
 ##
  name: Restart apache
  service:
@@ -229,8 +226,6 @@ Estos módulos se definen en el archivo ./taller_2020/roles/vars/main.yml:
    `- lbmethod_byrequests`
 
 ### Archivo de Variables
-##
-Archivo ./taller_2020/loadbalancer_vars.yml
 ##
 `nombre_cluster: balanceador`
 
@@ -281,11 +276,11 @@ Para realiizar un drive run: `ansible-playbook playbook.yml --check`
 ### Referencias
 
 [Documentación de Ansible](https://docs.ansible.com/)
-##
+
 [Ansible Essentials](https://www.ansible.com/resources/webinars-training/introduction-to-ansible)
-##
+
 [GitHub](https://github.com/)
-##
+
 [Apache Proxy Reverso y Balancep](https://www.digitalocean.com/community/tutorials/how-to-use-apache-as-a-reverse-proxy-with-mod_proxy-on-ubuntu-16-04)
 
 ### AUTOR
