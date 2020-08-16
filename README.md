@@ -86,17 +86,22 @@ El playbook de Ansible creado cuenta con los siguientes componentes:
 ##
 Se configuran los siguientes parámetros:
 `inventory       = ./inventario`
+
 `sudo_user      = ansible`
+
 `roles_path    = ./roles:/etc/ansible/roles`
 
 ### Archivo ./taller_2020/inventario
 ##
 `[webserver]`
+
 `centos1 ansible_host=192.168.227.7`
+
 `ubuntu1 ansible_host=192.168.227.9`
 
 ### Archivo ./taller_2020/playbook.yml
 Contiene las llamadas a los roles:
+##
     `- role: apache-redhat`
      ` when: ansible_facts['os_family'] == "RedHat"`
     `- role: apache-debian`
@@ -106,6 +111,7 @@ Contiene las llamadas a los roles:
 Y también contiene las tareas de loadbalancer:
 
 Para familia RedHat:
+##
   `- name: Create loadbalancer configuration for RedHat`
    ` template:`
 `      src: templates/loadbalancer.j2`
@@ -116,6 +122,7 @@ Para familia RedHat:
     `notify: Restart httpd`
 
 Para familia Debian:
+##
  ` - name: Create loadbalancer configuration for Debian`
   `  template:`
    `   src: templates/loadbalancer.j2`
@@ -156,6 +163,7 @@ Estos módulos son:
 ### Archivo de Variables
 ##
 Archivo ./taller_2020/loadbalancer_vars.yml
+##
 `nombre_cluster: balanceador`
 `nodo1: nodo1.lab.ort`
 `nodo2: nodo2.lab.ort`
@@ -165,16 +173,19 @@ Archivo ./taller_2020/loadbalancer_vars.yml
 
 ### Archivo ./taller_2020/loadbalancer.j2
 Contiene la configuración de virtual Host para Proxy Reverso y Balanceador
+##
 `<VirtualHost *:80>`
  ` <Proxy balancer://{{ nombre_cluster }}>`
      ` BalancerMember http://{{ nodo1 }}:{{ puerto1 }}`
     `  BalancerMember http://{{ nodo2 }}:{{ puerto2 }}`
   `    Require all granted`
  ` </Proxy>`
+
  `ProxyPreserveHost On`
  `ProxyPass /balancer-manager !`
  `ProxyPass / balancer://{{ nombre_cluster }}/`
  `ProxyPassReverse / balancer://{{ nombre_cluster }}/`
+ 
   `<Location "/balancer-manager">`
    `  SetHandler balancer-manager`
      `Require ip {{ red_autorizada }}`
